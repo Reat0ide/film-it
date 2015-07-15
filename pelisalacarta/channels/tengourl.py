@@ -26,7 +26,6 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("[tengourl.py] mainlist")
 
     itemlist = []
     itemlist.append( Item(channel=__channel__, action="search", title="Insert your URL"))
@@ -42,6 +41,4 @@ def search(item,texto):
         xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(url)
 
     return itemlist
-
-
 
