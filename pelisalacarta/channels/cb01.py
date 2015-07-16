@@ -77,7 +77,7 @@ def mainlist(item):
 
 #azione "peliculas" server per estrerre i titoli
 def peliculas(item):
-
+    print item.url + " URL Attuale"
     itemlist = []
     data = scrapertools.cache_page(item.url)
 
@@ -97,25 +97,17 @@ def peliculas(item):
 
 
 #next page
-    print item.url
-    patternpage = '<ul><li class="active_page"><a href="http://www.cb01.eu/">(.*?)</a></li>'
-    matches = re.compile(patternpage,re.DOTALL).findall(data)
-    print matches
-    '''
-    if not matches:
-		patternpage = "<span class='current'.*?</span>"
-		patternpage += "<a rel='nofollow' class='page larger' href='([^']+)'>.*?</a>"
-		matches = re.compile(patternpage,re.DOTALL).findall(data)
 
-    scrapertools.printMatches(matches)
-    '''
 
-    if len(matches)>0:
+    #patternpage = "<link rel='next' href='(.*?)' />"
+    patternpage = "<link rel='next' href=\'(.*?)\' />"
+    res = re.compile(patternpage,re.DOTALL).findall(data)
+    newurl = str(res)
+    newurl = newurl[2:-2]
+    print newurl + " next url"
+    print res
 
-        url=urljoin(item.url,"/page/")
-        scrapedurl = urljoin(url,matches[0])
-        print scrapedurl
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Next Page >>" , url=scrapedurl , folder=True) )
+    itemlist.append( Item(channel=__channel__, action="peliculas", title="Next Page >>" , url=newurl , folder=True) )
 
 
     return itemlist
