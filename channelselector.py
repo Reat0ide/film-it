@@ -174,26 +174,14 @@ def filterchannels(category):
 
 def channels_list():
     itemlist = []
-    
-    
 
     itemlist.append( Item( viewmode="movie", title="Play URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
-    #if config.get_setting("personalchannel")=="true":
-    #    itemlist.append( Item( title=config.get_setting("personalchannelname") , channel="personal" , language="" , category="F,S,D,A" , type="generic"  ))
-    #if config.get_setting("personalchannel2")=="true":
-    #    itemlist.append( Item( title=config.get_setting("personalchannelname2") , channel="personal2" , language="" , category="F,S,D,A" , type="generic"  ))
-    #if config.get_setting("personalchannel3")=="true":
-    #    itemlist.append( Item( title=config.get_setting("personalchannelname3") , channel="personal3" , language="" , category="F,S,D,A" , type="generic"  ))
-    #if config.get_setting("personalchannel4")=="true":
-    #    itemlist.append( Item( title=config.get_setting("personalchannelname4") , channel="personal4" , language="" , category="F,S,D,A" , type="generic"  ))
-    #if config.get_setting("personalchannel5")=="true":
-    #    itemlist.append( Item( title=config.get_setting("personalchannelname5") , channel="personal5" , language="" , category="F,S,D,A" , type="generic"  ))
-    
-
     itemlist.append( Item( title="Itastreaming (IT)"      , channel="itastreaming"           , language="IT"    , category="F,S,A"   , type="generic"     ))
     itemlist.append( Item( title="Griffin Ita"          , channel="griffin"         , language="IT" , category="F,S,D,A"        , type="generic" ))
     itemlist.append( Item( title="CB01"          , channel="cb01"         , language="IT" , category="F,S,D,A"        , type="generic" ))
     itemlist.append( Item( title="Itastreaming_test"          , channel="itastreaming_test"         , language="IT" , category="F,S,D,A"        , type="generic" ))
+    itemlist.append( Item( title="Itastreaming_test"          , channel="itastreaming_test"         , language="IT" , category="F,S,D,A"        , type="generic" ))
+
     return itemlist
 
 def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail="",folder=True):
