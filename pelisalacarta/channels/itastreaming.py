@@ -119,7 +119,7 @@ def peliculas(item):
         scrapedplot = ""
         
         if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail  ,  plot=scrapedplot , folder=True) )
      
     #next page
     print item.url

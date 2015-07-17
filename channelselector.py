@@ -120,7 +120,9 @@ def listchannels(params,url,category):
             else:
                 thumbnail=channel.thumbnail
                 if thumbnail == "":
+
                     thumbnail=urlparse.urljoin(get_thumbnail_path(),channel.channel+".png")
+                    #thumbnail = "/Users/arturo/Library/Application Support/Kodi/addons/plugin.video.pelisalacarta/resources/images" + channel.channel+".png"
             addfolder(channel.title , channel.channel , "mainlist" , channel.channel, thumbnail = thumbnail)
 
     # Label (top-right)...
@@ -141,6 +143,7 @@ def filterchannels(category):
         channelslist = channels_history_list()
         for channel in channelslist:
             channel.thumbnail = urlparse.urljoin(get_thumbnail_path(),channel.channel+".png")
+
             channel.plot = channel.category.replace("VOS","Versión original subtitulada").replace("F","Películas").replace("S","Series").replace("D","Documentales").replace("A","Anime").replace(",",", ")
             returnlist.append(channel)
     else:
@@ -166,6 +169,7 @@ def filterchannels(category):
                 continue
             if channel.thumbnail == "":
                 channel.thumbnail = urlparse.urljoin(get_thumbnail_path(),channel.channel+".png")
+                #channel.thumbnail = get_thumbnail_path(),channel.channel+".png"
             channel.plot = channel.category.replace("VOS","Versión original subtitulada").replace("F","Películas").replace("S","Series").replace("D","Documentales").replace("A","Anime").replace(",",", ")
             returnlist.append(channel)
 
@@ -198,6 +202,7 @@ def addfolder(nombre,channelname,accion,category="",thumbnailname="",thumbnail="
     itemurl = '%s?channel=%s&action=%s&category=%s' % ( sys.argv[ 0 ] , channelname , accion , category )
     xbmcplugin.addDirectoryItem( handle = int(sys.argv[ 1 ]), url = itemurl , listitem=listitem, isFolder=folder)
 
+
 def get_thumbnail_path():
 
     WEB_PATH = ""
@@ -212,5 +217,5 @@ def get_thumbnail_path():
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/banners/"
     elif thumbnail_type=="2":
         WEB_PATH = "http://pelisalacarta.mimediacenter.info/squares/"
-
+         #WEB_PATH = "/Users/arturo/Library/Application\ Support/Kodi/addons/plugin.video.pelisalacarta/resources/images/"
     return WEB_PATH
