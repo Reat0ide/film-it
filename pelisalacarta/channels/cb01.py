@@ -42,6 +42,7 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="Ultimi 100 Film aggiornati" , url="http://www.cb01.eu/lista-film-ultimi-100-film-aggiornati/" ))
+    itemlist.append( Item(channel=__channel__ , action="search", title="Cerca Film"))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="Ultimi Film aggiunti" , url="http://www.cb01.eu/" ))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="Avventura" , url="http://www.cb01.eu/category/avventura-aggiornato/" ))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="Azione" , url="http://www.cb01.eu/category/azione-aggiornato/" ))
@@ -74,6 +75,41 @@ def mainlist(item):
     return itemlist
 
 
+def search(item, text):
+    print "cerca"
+    itemlist = []
+    text = text.replace(" ", "%2B")
+    print text
+    item.url = "http://www.cb01.eu/?s=" + text
+    try:
+        print item.url
+        data = scrapertools.cache_page(item.url)
+        pattern = '<div class="span12 filmbox">\s*'
+        pattern +='<div class="span4"> <a href="?([^>"]+)"?><p><img.*?src="([^>"]+)'
+        matches = re.compile(pattern,re.DOTALL).findall(data)
+        scrapertools.printMatches(matches)
+
+        for scrapedurl,scrapedthumbnail  in matches:
+            url = scrapedurl
+            title = urlparse(url)
+            title = title.path
+            thumbnail = ""
+
+            itemlist.append(Item(channel=__channel__, action="playit", title=title, url=url, thumbnail=thumbnail, folder=True))
+
+        return itemlist
+
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+        return []
+
+
+
+
+    return itemlist
+
 
 #azione "peliculas" server per estrerre i titoli
 def peliculas(item):
@@ -93,13 +129,7 @@ def peliculas(item):
         thumbnail = ""
         itemlist.append( Item(channel=__channel__, action="playit", title=title , url=url , thumbnail=scrapedthumbnail, folder=True) )
 
-    #return itemlist
-
-
-#next page
-
-
-    #patternpage = "<link rel='next' href='(.*?)' />"
+    #next page
     patternpage = "<link rel='next' href=\'(.*?)\' />"
     res = re.compile(patternpage,re.DOTALL).findall(data)
     newurl = str(res)
@@ -116,6 +146,7 @@ def peliculas(item):
 def playit(item):
     itemlist = []
     data = scrapertools.cache_page(item.url)
+
     pattern = '//((?:www.)?videomega.tv)/(?:(?:iframe|cdn|validatehash|view)\.php)?\?(?:ref|hashkey)=([a-zA-Z0-9]+)'
     matches = re.compile(pattern).findall(data)
 
@@ -134,5 +165,5 @@ def playit(item):
 
     else:
         print "medium not found"
-
+        return []
     return itemlist
