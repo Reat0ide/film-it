@@ -41,7 +41,7 @@ def isGeneric():
 def mainlist(item):
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="Ultimi 100 Film aggiornati" , url="http://www.cb01.eu/lista-film-ultimi-100-film-aggiornati/" ))
+    itemlist.append( Item(channel=__channel__ , action="ultimi", title="Ultimi 100 Film aggiornati" , url="http://www.cb01.eu/lista-film-ultimi-100-film-aggiornati/" ))
     itemlist.append( Item(channel=__channel__ , action="search", title="Cerca Film"))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="Ultimi Film aggiunti" , url="http://www.cb01.eu/" ))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="Avventura" , url="http://www.cb01.eu/category/avventura-aggiornato/" ))
@@ -111,6 +111,32 @@ def search(item, text):
     return itemlist
 
 
+def ultimi(item):
+
+    print "lista ultimi film"
+    #<td width="342" height="57" valign="top"><!-- Lista a/z - http://www.cineblog01.com --><strong>Ultimi 100 film Aggiornati:</a></strong><br>- <a href="http://www.cb01.eu/argo-2012/">Argo [HD] (2012)</a>
+    itemlist = []
+
+    data = scrapertools.cache_page(item.url)
+    #pattern = '<td width="342" height="57" valign="top">.*?<a href="(.*?)">(.*?)</a>(.*?)'
+    pattern = '<td width="342" height="57" valign="top">(.*?)</td>'
+    matches = re.compile(pattern,re.DOTALL).findall(data)
+    megastring = str(matches)
+    megastring = megastring[2:-2]
+    matches = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', megastring)
+
+    for res in matches:
+        # elimina il primo elemento!
+        url = res
+        title = urlparse(url)
+        title = title.path
+        #to do: searching for thumbnail
+        thumbnail = ""
+        itemlist.append( Item(channel=__channel__, action="playit", title=title , url=url , thumbnail=thumbnail, folder=True) )
+
+
+    return itemlist
+
 #azione "peliculas" server per estrerre i titoli
 def peliculas(item):
     print item.url + " URL Attuale"
@@ -165,5 +191,9 @@ def playit(item):
 
     else:
         print "medium not found"
+        #search for other medium
         return []
+
+
+
     return itemlist
