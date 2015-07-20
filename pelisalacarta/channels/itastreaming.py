@@ -153,7 +153,12 @@ def grabing(item):
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         dcap["phantomjs.page.settings.userAgent"] = (
              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+        #for Linux or Mac
         browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+
+        #for OpenElec
+        #browser = webdriver.PhantomJS(executable_path='/storage/.kodi/addons/plugin.video.pelisalacarta/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        #chmod 777 /storage/.kodi/addons/plugin.video.pelisalacarta/phantomjs
         browser.get(item.url)
 
         try:

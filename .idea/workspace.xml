@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b036d0d6-68d8-4c1e-b6f1-64919c0bf34d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pelisalacarta/channels/cb01.py" afterPath="$PROJECT_DIR$/pelisalacarta/channels/cb01.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pelisalacarta/channels/itastreaming.py" afterPath="$PROJECT_DIR$/pelisalacarta/channels/itastreaming.py" />
     </list>
     <ignored path="plugin.video.pelisalacarta.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -23,21 +23,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="itastreaming.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="itastreaming.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pelisalacarta/channels/itastreaming.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="112" column="38" selection-start-line="112" selection-start-column="38" selection-end-line="112" selection-end-column="38" />
+            <state vertical-scroll-proportion="0.6223446">
+              <caret line="158" column="8" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="8" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="cb01.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="cb01.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pelisalacarta/channels/cb01.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5869394">
-              <caret line="139" column="117" selection-start-line="139" selection-start-column="117" selection-end-line="139" selection-end-column="117" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -57,9 +57,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/addon.xml" />
-        <option value="$PROJECT_DIR$/pelisalacarta/channels/itastreaming.py" />
         <option value="$PROJECT_DIR$/channelselector.py" />
         <option value="$PROJECT_DIR$/pelisalacarta/channels/cb01.py" />
+        <option value="$PROJECT_DIR$/pelisalacarta/channels/itastreaming.py" />
       </list>
     </option>
   </component>
@@ -237,18 +237,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pelisalacarta/channels/itastreaming.py">
+    <entry file="file://$PROJECT_DIR$/pelisalacarta/channels/cb01.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="112" column="38" selection-start-line="112" selection-start-column="38" selection-end-line="112" selection-end-column="38" />
+          <caret line="100" column="0" selection-start-line="100" selection-start-column="0" selection-end-line="100" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pelisalacarta/channels/cb01.py">
+    <entry file="file://$USER_HOME$/Google Drive/itastreaming-pi2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5869394">
-          <caret line="139" column="117" selection-start-line="139" selection-start-column="117" selection-end-line="139" selection-end-column="117" />
+        <state vertical-scroll-proportion="-1.2541306">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pelisalacarta/channels/itastreaming.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6223446">
+          <caret line="158" column="8" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="8" />
           <folding />
         </state>
       </provider>
