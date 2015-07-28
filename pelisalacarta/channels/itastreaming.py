@@ -11,6 +11,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 #from pyvirtualdisplay import Display
 import urlparse,urllib2,urllib,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
 import os, sys, time
+import cfscrape
 
 from core import logger
 from core import config
@@ -71,13 +72,20 @@ def mainlist(item):
 
 #searching for films
 def search(item, text):
-    logger.info("[itastreaming.py] search " + text)
+
     itemlist = []
+
+
+
     text = text.replace(" ", "%20")
     item.url = "http://itastreaming.tv/?s=" + text
+
+
     try:
 
-        data = scrapertools.cache_page(item.url)
+        #CloudFlare hack
+        scraper = cfscrape.create_scraper()
+        data = scraper.get(item.url).content
         pattern = '<img class="imx" style="margin-top:0px;" src="?([^>"]+)"?.*?alt="?([^>"]+)"?.*?'
         pattern += '<h3><a href="?([^>"]+)"?.*?</h3>'
         matches = re.compile(pattern,re.DOTALL).findall(data)
@@ -101,15 +109,16 @@ def peliculas(item):
     logger.info("pelisalacarta.itastreaming peliculas")
     itemlist = []
 
-    # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
+    #CloudFlare hack
+    scraper = cfscrape.create_scraper()
+    data = scraper.get(item.url).content
 
     patron  = '<div class="item">\s*'
     patron += '<a href="?([^>"]+)"?.*?title="?([^>"]+)"?.*?'
     patron += '<div class="img">\s*'
     patron += '<img.*?src="([^>"]+)'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    #print item.url
+
     scrapertools.printMatches(matches)
 
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
@@ -122,7 +131,7 @@ def peliculas(item):
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail  ,  plot=scrapedplot , folder=True) )
      
     #next page
-    print item.url
+    #print item.url
     patternpage = "<a rel='nofollow' class=previouspostslink' href='([^']+)'>Seguente &rsaquo;</a>" 
     matches = re.compile(patternpage,re.DOTALL).findall(data)
     print matches
@@ -143,9 +152,12 @@ def peliculas(item):
 
 # use selenium with phantomjs (phantomjs - 1.9.8 Linux x86_64 )
 def grabing(item):
-    data = scrapertools.cache_page(item.url)
-    logger.info("pelisalacarta.itastreaming_test grabing")
+
     itemlist = []
+    #CloudFlare hack
+    scraper = cfscrape.create_scraper()
+    data = scraper.get(item.url).content
+
     #esegue questa funziona solo se si clicca sul titolo del film
     if item.title:
         filmtitle = item.title

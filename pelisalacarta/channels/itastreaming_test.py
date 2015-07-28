@@ -7,6 +7,7 @@
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import cfscrape
 import time
 #from pyvirtualdisplay import Display
 import urlparse,urllib2,urllib,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
@@ -69,28 +70,30 @@ def mainlist(item):
 
 #azione "peliculas" server per estrerre i titoli
 def peliculas(item):
-    logger.info("pelisalacarta.itastreaming_test peliculas")
+
     itemlist = []
 
-    # Descarga la pagina
-    data = scrapertools.cache_page(item.url)
+    #CloudFlare hack
+    scraper = cfscrape.create_scraper()
+    data = scraper.get(item.url).content
+
 
     patron  = '<div class="item">\s*'
     patron += '<a href="?([^>"]+)"?.*?title="?([^>"]+)"?.*?'
     patron += '<div class="img">\s*'
     patron += '<img.*?src="([^>"]+)'
     matches = re.compile(patron,re.DOTALL).findall(data)
-    #print item.url
-    scrapertools.printMatches(matches)
+
+
 
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = ""
+        thumbnail = scraper.get(scrapedthumbnail).content
         scrapedplot = ""
         
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
-        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
+
+        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
      
     #next page
     print item.url
@@ -115,9 +118,11 @@ def peliculas(item):
 
 
 def grabing(item):
-    data = scrapertools.cache_page(item.url)
-    logger.info("pelisalacarta.itastreaming_test grabing")
+
     itemlist = []
+    scraper = cfscrape.create_scraper()
+    data = scraper.get(item.url).content
+
     #esegue questa funziona solo se si clicca sul titolo del film
     if item.title:
         filmtitle = item.title
@@ -136,6 +141,7 @@ def grabing(item):
 
         except:
             fakeurl = re.findall('"((http)s?://www.hdpass.link.*?)"', data)
+
             url =  fakeurl[0][0]
             browser.get(url)
             nData = browser.execute_script("return nData")
