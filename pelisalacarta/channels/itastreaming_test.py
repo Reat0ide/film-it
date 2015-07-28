@@ -89,11 +89,11 @@ def peliculas(item):
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = scraper.get(scrapedthumbnail).content
+        thumbnail = ""
         scrapedplot = ""
         
 
-        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
      
     #next page
     print item.url
