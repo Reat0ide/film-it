@@ -186,7 +186,7 @@ def grabing(item):
             browser.close()
 
         except:
-            fakeurl = re.findall('"((http)s?://www.hdpass.link.*?)"', data)
+            fakeurl = re.findall('"((http)s?://.*?hdpass.link.*?)"', data)
             url =  fakeurl[0][0]
             print url
 
