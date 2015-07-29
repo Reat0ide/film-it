@@ -12,7 +12,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import urlparse,urllib2,urllib,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
 import os, sys, time
 import cfscrape
-
+import HTMLParser
 from core import logger
 from core import config
 from core import scrapertools
@@ -86,6 +86,7 @@ def search(item, text):
         #CloudFlare hack
         scraper = cfscrape.create_scraper()
         data = scraper.get(item.url).content
+
         pattern = '<img class="imx" style="margin-top:0px;" src="?([^>"]+)"?.*?alt="?([^>"]+)"?.*?'
         pattern += '<h3><a href="?([^>"]+)"?.*?</h3>'
         matches = re.compile(pattern,re.DOTALL).findall(data)
@@ -119,19 +120,24 @@ def peliculas(item):
     patron += '<img.*?src="([^>"]+)'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
-    scrapertools.printMatches(matches)
 
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
-        title = scrapedtitle.strip()
+        title = str(scrapedtitle.strip())
+        #print title
+
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = ""
         scrapedplot = ""
-        
-        if (DEBUG): logger.info("title=["+title+"], url=["+url+"], thumbnail=["+thumbnail+"]")
+
+
+
+
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail  ,  plot=scrapedplot , folder=True) )
      
+
+
     #next page
-    #print item.url
+
     patternpage = "<a rel='nofollow' class=previouspostslink' href='([^']+)'>Seguente &rsaquo;</a>" 
     matches = re.compile(patternpage,re.DOTALL).findall(data)
     print matches

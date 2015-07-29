@@ -95,7 +95,7 @@ def search(item, text):
             title = title.path
             thumbnail = ""
 
-            itemlist.append(Item(channel=__channel__, action="playit", title=title, url=url, thumbnail=thumbnail, folder=True))
+            itemlist.append(Item(channel=__channel__, action="grabing", title=title, url=url, thumbnail=thumbnail, folder=True))
 
         return itemlist
 
@@ -132,7 +132,7 @@ def ultimi(item):
         title = title.path
         #to do: searching for thumbnail
         thumbnail = ""
-        itemlist.append( Item(channel=__channel__, action="playit", title=title , url=url , thumbnail=thumbnail, folder=True) )
+        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail, folder=True) )
 
 
     return itemlist
@@ -153,7 +153,7 @@ def peliculas(item):
         title = urlparse(url)
         title = title.path
         thumbnail = ""
-        itemlist.append( Item(channel=__channel__, action="playit", title=title , url=url , thumbnail=scrapedthumbnail, folder=True) )
+        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail, folder=True) )
 
     #next page
     patternpage = "<link rel='next' href=\'(.*?)\' />"
@@ -169,7 +169,7 @@ def peliculas(item):
     return itemlist
 
 
-def playit(item):
+def grabing(item):
     itemlist = []
     data = scrapertools.cache_page(item.url)
 
@@ -184,16 +184,88 @@ def playit(item):
         stream_url = urlresolver.HostedMediaFile(host= url, media_id=media_id).resolve()
         itemlist.append( Item(channel=__channel__, action="playit", title=item.title , url=stream_url ))
 
-        if not xbmc.Player().isPlayingVideo():
-            xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(stream_url)
+        #if not xbmc.Player().isPlayingVideo():
+        #    xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(stream_url)
 
 
 
     else:
-        print "medium not found"
-        #search for other medium
-        return []
 
+        #search for other medium
+        stream_url = 'http://vkpass.com/'
+        try:
+            pattern = 'data-src="http://vkpass.com/(.*?)"'
+            matches = str(re.compile(pattern).findall(data))
+            matches = matches[2:-2]
+            stream_url = stream_url + matches # vkpass encrypted url
+
+            url = vkpass_streams(stream_url)
+            #print url # OK!!
+
+            for quali,gurl in url:
+                #itemlist.append( Item(channel=__channel__, action="playit", title=item.title , url=stream_url ))
+                itemlist.append( Item(channel=__channel__, action="playit", title=item.title + "  quality: " + quali , url=gurl ))
+
+
+
+
+
+        except:
+            print "medium not found"
 
 
     return itemlist
+
+
+
+def playit(item):
+    itemlist = []
+    print item.url
+    itemlist.append( Item(channel=__channel__, action="playit", title=item.title , url=item.url ))
+    if not xbmc.Player().isPlayingVideo():
+        xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(item.url)
+
+    return itemlist
+
+
+def vkpass_streams(url):
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Referer': "http://cb01.eu/"
+    }
+
+    #print HEADERS
+
+    req = urllib2.Request(url, headers=HEADERS)
+    response = urllib2.urlopen(req)
+    html = response.read()
+    #print html
+    response.close()
+
+    return _vkpass_streams_from_html(html)
+
+
+def _vkpass_streams_from_html(html):
+    identifier = "vsource=["
+    vsource_start = html.index(identifier) + len(identifier) - 1
+    vsource_end = html.index("]", vsource_start + 1) + 1
+
+    file_start = html.find('file:', vsource_start)
+    formats = []
+
+    while file_start != -1 and file_start < vsource_end:
+        quote_start = file_start + 6
+        quote_end = html.find('"', quote_start + 1)
+        url = html[quote_start : quote_end]
+
+        label_start = html.find('label:', quote_end)
+        quote_start = label_start + 7
+        quote_end = html.find('"', quote_start + 1)
+        label = html[quote_start : quote_end]
+
+        formats.append((label, url))
+        file_start = html.find('file:', quote_end)
+
+
+    return formats

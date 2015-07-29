@@ -12,7 +12,6 @@ import time
 #from pyvirtualdisplay import Display
 import urlparse,urllib2,urllib,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
 import os, sys
-
 from core import logger
 from core import config
 from core import scrapertools
@@ -29,6 +28,8 @@ __language__ = "IT"
 
 DEBUG = config.get_setting("debug")
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0"
+
+
 def isGeneric():
     return True
 
@@ -37,7 +38,6 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="ultimi film inseriti..." , url="http://itastreaming.tv" ))
-
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="animazione" , url="http://itastreaming.tv/genere/animazione" ))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="avventura" , url="http://itastreaming.tv/genere/avventura" ))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="azione" , url="http://itastreaming.tv/genere/azione" ))
@@ -76,7 +76,6 @@ def peliculas(item):
     #CloudFlare hack
     scraper = cfscrape.create_scraper()
     data = scraper.get(item.url).content
-
 
     patron  = '<div class="item">\s*'
     patron += '<a href="?([^>"]+)"?.*?title="?([^>"]+)"?.*?'
