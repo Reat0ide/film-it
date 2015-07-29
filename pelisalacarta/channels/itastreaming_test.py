@@ -139,10 +139,13 @@ def grabing(item):
             browser.close()
 
         except:
-            fakeurl = re.findall('"((http)s?://www.hdpass.link.*?)"', data)
+
+            fakeurl = re.findall('"((http)s?://?hdpass.link.*?)"', data)
+            print fakeurl
 
             url =  fakeurl[0][0]
             browser.get(url)
+
             nData = browser.execute_script("return nData")
             for block in nData:
                 itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + "  quality: " + block['width'] +  " x " + block['height'] , url=block['url'] ))
