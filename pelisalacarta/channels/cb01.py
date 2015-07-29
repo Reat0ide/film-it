@@ -184,34 +184,35 @@ def grabing(item):
         stream_url = urlresolver.HostedMediaFile(host= url, media_id=media_id).resolve()
         itemlist.append( Item(channel=__channel__, action="playit", title=item.title , url=stream_url ))
 
-        #if not xbmc.Player().isPlayingVideo():
-        #    xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(stream_url)
-
-
-
-    else:
-
+    elif not matches:
         #search for other medium
-        stream_url = 'http://vkpass.com/'
         try:
+            stream_url = 'http://vkpass.com/'
             pattern = 'data-src="http://vkpass.com/(.*?)"'
             matches = str(re.compile(pattern).findall(data))
-            matches = matches[2:-2]
-            stream_url = stream_url + matches # vkpass encrypted url
+            if matches:
+                matches = matches[2:-2]
+                stream_url = stream_url + matches # vkpass encrypted url
+                url = vkpass_streams(stream_url)
+                print url # OK!!
 
-            url = vkpass_streams(stream_url)
-            #print url # OK!!
-
-            for quali,gurl in url:
-                #itemlist.append( Item(channel=__channel__, action="playit", title=item.title , url=stream_url ))
-                itemlist.append( Item(channel=__channel__, action="playit", title=item.title + "  quality: " + quali , url=gurl ))
-
-
-
-
-
+                for quali,gurl in url:
+                    itemlist.append( Item(channel=__channel__, action="playit", title=item.title + "  quality: " + quali , url=gurl ))
         except:
             print "medium not found"
+
+    else:
+        stream_url = 'http://swzz.xyz/link/'
+        pattern = 'data-src="http://swzz.xyz/link/(.*?)"'
+        matches = str(re.compile(pattern).findall(data))
+        print matches
+
+
+
+
+
+
+
 
 
     return itemlist
