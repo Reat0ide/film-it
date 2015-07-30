@@ -18,7 +18,6 @@ from core import scrapertools
 from core.item import Item
 #from servers import servertools
 import json
-   
 
 __channel__ = "itastreaming_test"
 __category__ = "F"
@@ -79,7 +78,6 @@ def peliculas(item):
     browser.get(item.url)
     time.sleep(5)
     data =  browser.page_source.encode('utf-8')
-    #print data.encode('utf-8')
 
     patron  = '<div class="item">\s*'
     patron += '<a href="?([^>"]+)"?.*?title="?([^>"]+)"?.*?'
@@ -87,20 +85,16 @@ def peliculas(item):
     patron += '<img.*?src="([^>"]+)'
     matches = re.compile(patron,re.DOTALL).findall(data)
 
-
-
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = ""
         scrapedplot = ""
-        
-
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
      
     #next page
-    print item.url
-    patternpage = "<a rel='nofollow' class=previouspostslink' href='([^']+)'>Seguente &rsaquo;</a>" 
+    #patternpage = "<a rel='nofollow' class=previouspostslink' href='([^']+)'>Seguente </a>"
+    patternpage = '<a rel="nofollow" class="previouspostslink\'" href="(.*?)">Seguente \›</a>'
     matches = re.compile(patternpage,re.DOTALL).findall(data)
     print matches
     
@@ -109,7 +103,7 @@ def peliculas(item):
 		patternpage += "<a rel='nofollow' class='page larger' href='([^']+)'>.*?</a>"
 		matches = re.compile(patternpage,re.DOTALL).findall(data) 
     
-    scrapertools.printMatches(matches)
+    print matches
     
     
     if len(matches)>0:
@@ -133,14 +127,15 @@ def grabing(item):
 
     #esegue questa funziona solo se si clicca sul titolo del film
     if item.title:
-        filmtitle = item.title
+        filmtitle = str(item.title)
+        filmtitle =  filmtitle.replace('–','')
 
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         dcap["phantomjs.page.settings.userAgent"] = (
              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
         browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
         browser.get(item.url)
-        time.sleep(5)
+        time.sleep(7)
         try:
             nData = browser.execute_script("return nData")
             print nData
@@ -155,10 +150,12 @@ def grabing(item):
 
             url =  fakeurl[0][0]
             browser.get(url)
-            time.sleep(5)
+            time.sleep(7)
             nData = browser.execute_script("return nData")
             print nData
+            print filmtitle
             for block in nData:
+                print block['url']
                 itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + "  quality: " + block['width'] +  " x " + block['height'] , url=block['url'] ))
             browser.close()
 
