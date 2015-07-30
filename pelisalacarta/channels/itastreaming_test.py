@@ -7,7 +7,7 @@
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-import cfscrape
+#import cfscrape
 import time
 #from pyvirtualdisplay import Display
 import urlparse,urllib2,urllib,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
@@ -73,9 +73,13 @@ def peliculas(item):
 
     itemlist = []
 
-    #CloudFlare hack
-    scraper = cfscrape.create_scraper()
-    data = scraper.get(item.url).content
+    dcap = dict(DesiredCapabilities.PHANTOMJS)
+    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+    browser.get(item.url)
+    time.sleep(5)
+    data =  browser.page_source.encode('utf-8')
+    #print data.encode('utf-8')
 
     patron  = '<div class="item">\s*'
     patron += '<a href="?([^>"]+)"?.*?title="?([^>"]+)"?.*?'
@@ -119,8 +123,13 @@ def peliculas(item):
 def grabing(item):
 
     itemlist = []
-    scraper = cfscrape.create_scraper()
-    data = scraper.get(item.url).content
+    dcap = dict(DesiredCapabilities.PHANTOMJS)
+    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+    browser.get(item.url)
+    time.sleep(5)
+    data =  browser.page_source.encode('utf-8')
+
 
     #esegue questa funziona solo se si clicca sul titolo del film
     if item.title:
@@ -131,9 +140,10 @@ def grabing(item):
              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
         browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
         browser.get(item.url)
-
+        time.sleep(5)
         try:
             nData = browser.execute_script("return nData")
+            print nData
             for block in nData:
                 itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + "  quality: " + block['width'] +  " x " + block['height'] , url=block['url'] ))
             browser.close()
@@ -145,8 +155,9 @@ def grabing(item):
 
             url =  fakeurl[0][0]
             browser.get(url)
-
+            time.sleep(5)
             nData = browser.execute_script("return nData")
+            print nData
             for block in nData:
                 itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + "  quality: " + block['width'] +  " x " + block['height'] , url=block['url'] ))
             browser.close()
