@@ -37,6 +37,7 @@ def mainlist(item):
 
     itemlist = []
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="ultimi film inseriti..." , url="http://itastreaming.tv" ))
+    itemlist.append( Item(channel=__channel__ , action="search", title="Cerca Film"))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="animazione" , url="http://itastreaming.tv/genere/animazione" ))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="avventura" , url="http://itastreaming.tv/genere/avventura" ))
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="azione" , url="http://itastreaming.tv/genere/azione" ))
@@ -65,6 +66,40 @@ def mainlist(item):
          
     return itemlist
 
+#searching for films
+def search(item, text):
+
+    itemlist = []
+    text = text.replace(" ", "%20")
+    item.url = "http://itastreaming.tv/?s=" + text
+
+    try:
+
+        dcap = dict(DesiredCapabilities.PHANTOMJS)
+        dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+        browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        browser.get(item.url)
+        time.sleep(5)
+        data =  browser.page_source.encode('utf-8')
+
+        pattern = '<img class="imx" style="margin-top:0px;" src="?([^>"]+)"?.*?alt="?([^>"]+)"?.*?'
+        pattern += '<h3><a href="?([^>"]+)"?.*?</h3>'
+        matches = re.compile(pattern,re.DOTALL).findall(data)
+
+        for scrapedthumbnail, scrapedtitle, scrapedurl in matches:
+            title = scrapedtitle.strip()
+            url = urlparse.urljoin(item.url, scrapedurl)
+            #thumbnail = urlparse.urljoin(item.url, scrapedthumbnail)
+            thumbnail = scrapthumb(title)
+            itemlist.append(Item(channel=__channel__, action="grabing", title=title, url=url, thumbnail=thumbnail, folder=True))
+
+        return itemlist
+
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+        return []
 
 
 #azione "peliculas" server per estrerre i titoli
@@ -89,7 +124,7 @@ def peliculas(item):
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapthumb(title)
-        print thumbnail
+        #print thumbnail
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
         #scrapthumb(title) #ok
