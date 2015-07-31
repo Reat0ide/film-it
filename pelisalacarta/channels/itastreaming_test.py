@@ -88,22 +88,23 @@ def peliculas(item):
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = ""
+        thumbnail = scrapthumb(title)
+        print thumbnail
         scrapedplot = ""
-        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=scrapedthumbnail , plot=scrapedplot , folder=True) )
-     
+        itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
+        #scrapthumb(title) #ok
+
     #next page
-    #patternpage = "<a rel='nofollow' class=previouspostslink' href='([^']+)'>Seguente </a>"
     patternpage = '<a rel="nofollow" class="previouspostslink\'" href="(.*?)">Seguente \›</a>'
     matches = re.compile(patternpage,re.DOTALL).findall(data)
-    print matches
+    #print matches
     
     if not matches:
 		patternpage = "<span class='current'.*?</span>"
 		patternpage += "<a rel='nofollow' class='page larger' href='([^']+)'>.*?</a>"
 		matches = re.compile(patternpage,re.DOTALL).findall(data) 
     
-    print matches
+    #print matches
     
     
     if len(matches)>0:
@@ -170,4 +171,24 @@ def playit(item):
         xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(item.url)
     return itemlist
 
+def scrapthumb(title):
 
+    title = title.strip().replace('–','').replace('’','-').replace('à','a')
+    title = title.replace(' ','-')
+    title = title[:-7]
+    #print title
+    mdburl = 'https://www.themoviedb.org/search?query=' + title
+    req = urllib2.Request(mdburl)
+    response = urllib2.urlopen(req)
+    data = response.read()
+    pattern = '<div class="poster">\s*'
+    pattern += '<a.*?src="(.*?)"'
+    matches = re.compile(pattern,re.DOTALL).findall(data)
+    thumbnail = ""
+    if matches:
+        thumbnail = matches[0]
+        thumbnail = thumbnail.replace('w92','original')
+    else:
+        print "thumb not found for: " + mdburl
+
+    return thumbnail
