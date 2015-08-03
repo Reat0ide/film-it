@@ -183,18 +183,22 @@ def scrapthumb(title):
     print title
 
     mdburl = 'https://www.themoviedb.org/search?query=' + title
+    imdb = 'http://www.imdb.com/find?q=' + title                #il+fidanzato+di+mia++++sorella
     req = urllib2.Request(mdburl)
     response = urllib2.urlopen(req)
     data = response.read()
     pattern = '<div class="poster">\s*'
     pattern += '<a.*?src="(.*?)"'
+
     matches = re.compile(pattern,re.DOTALL).findall(data)
     thumbnail = ""
+
     if matches:
         thumbnail = matches[0]
         thumbnail = thumbnail.replace('w92','original')
     else:
-        print "thumb not found for: " + mdburl
 
-    #thumbnail = ""
+        print "thumb not found on tmdb: " + mdburl
+        #http://www.mymovies.it/database/ricerca/?q3=antboy
+        
     return thumbnail
