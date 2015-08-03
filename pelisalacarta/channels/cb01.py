@@ -189,9 +189,10 @@ def grabing(item):
         try:
             stream_url = 'http://vkpass.com/'
             pattern = 'data-src="http://vkpass.com/(.*?)"'
-            matches = str(re.compile(pattern).findall(data))
+            matches = re.compile(pattern).findall(data)
+            print matches
             if matches:
-                matches = matches[2:-2]
+                matches = matches[0]
                 stream_url = stream_url + matches # vkpass encrypted url
                 url = vkpass_streams(stream_url)
                 print url # OK!!
