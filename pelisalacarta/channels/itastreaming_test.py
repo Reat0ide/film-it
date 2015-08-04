@@ -18,6 +18,10 @@ from core import scrapertools
 from core.item import Item
 #from servers import servertools
 import json
+import cookielib
+import requests
+
+
 
 __channel__ = "itastreaming_test"
 __category__ = "F"
@@ -25,15 +29,51 @@ __type__ = "generic"
 __title__ = "itastreaming_test"
 __language__ = "IT"
 
-DEBUG = config.get_setting("debug")
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0"
+
+
+
+############    first selenium call    ###########################
+
+b = None
+if b is None:
+    COOKIEFILE = 'itacookie.lwp'
+    baseUrl = "http://itastreaming.co"
+    dcap = dict(DesiredCapabilities.PHANTOMJS)
+    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+    browser.get(baseUrl)
+    time.sleep(10)
+
+    #get cookie
+    a = browser.get_cookies()
+    print 'Got cloudflare cookies:\n'
+    browser.close()
+
+    h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
+    b = cookielib.LWPCookieJar()
+
+    for i in a:
+        # create the cf_session_cookie
+        ck = cookielib.Cookie(name=i['name'], value=i['value'], domain=i['domain'], path=i['path'], secure=i['secure'], rest=False, version=0,port=None,port_specified=False,domain_specified=False,domain_initial_dot=False,path_specified=True,expires=i['expiry'],discard=True,comment=None,comment_url=None,rfc2109=False)
+        b.set_cookie(ck)
+    # save into a file
+    #itacookie = cookielib.LWPCookieJar()
+    print b
+    b.save(COOKIEFILE)
+
+
+###############################################
+
+
+
 
 
 def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("pelisalacarta.itastreaming_test  mainlist")
+
+
 
     itemlist = []
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="ultimi film inseriti..." , url="http://itastreaming.tv" ))
@@ -75,12 +115,14 @@ def search(item, text):
 
     try:
 
-        dcap = dict(DesiredCapabilities.PHANTOMJS)
-        dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-        browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-        browser.get(item.url)
-        time.sleep(5)
-        data =  browser.page_source.encode('utf-8')
+        #dcap = dict(DesiredCapabilities.PHANTOMJS)
+        #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+        #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        #browser.get(item.url)
+        #time.sleep(5)
+        #data =  browser.page_source.encode('utf-8')
+        data = requests.get(item.url, cookies=b, headers=h)
+        print data
 
         pattern = '<img class="imx" style="margin-top:0px;" src="?([^>"]+)"?.*?alt="?([^>"]+)"?.*?'
         pattern += '<h3><a href="?([^>"]+)"?.*?</h3>'
@@ -107,12 +149,8 @@ def peliculas(item):
 
     itemlist = []
 
-    dcap = dict(DesiredCapabilities.PHANTOMJS)
-    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    browser.get(item.url)
-    time.sleep(5)
-    data =  browser.page_source.encode('utf-8')
+    data = requests.get(item.url, cookies=b, headers=h)
+    data = data.text.encode('utf-8')
 
     patron  = '<div class="item">\s*'
     patron += '<a href="?([^>"]+)"?.*?title="?([^>"]+)"?.*?'
@@ -123,42 +161,26 @@ def peliculas(item):
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
-        thumbnail = scrapthumb(title)
-        #print thumbnail
+        #thumbnail = scrapthumb(title)
+        thumbnail = ""
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
         #scrapthumb(title) #ok
 
-    #next page
-    patternpage = '<a rel="nofollow" class="previouspostslink\'" href="(.*?)">Seguente \›</a>'
-    matches = re.compile(patternpage,re.DOTALL).findall(data)
-    #print matches
-    
-    if not matches:
-		patternpage = "<span class='current'.*?</span>"
-		patternpage += "<a rel='nofollow' class='page larger' href='([^']+)'>.*?</a>"
-		matches = re.compile(patternpage,re.DOTALL).findall(data) 
-    
-    #print matches
-    
-    
-    if len(matches)>0:
-        scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Next Page >>" , url=scrapedurl , folder=True) )
-    
-    
     return itemlist
+
+
+
+
+
+
 
 
 def grabing(item):
 
     itemlist = []
-    dcap = dict(DesiredCapabilities.PHANTOMJS)
-    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    browser.get(item.url)
-    time.sleep(5)
-    data =  browser.page_source.encode('utf-8')
+    data = requests.get(item.url, cookies=b, headers=h)
+    data = data.text.encode('utf-8')
 
 
     #esegue questa funziona solo se si clicca sul titolo del film
@@ -170,8 +192,9 @@ def grabing(item):
         dcap["phantomjs.page.settings.userAgent"] = (
              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
         browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        #browser.add_cookie(b)
         browser.get(item.url)
-        time.sleep(7)
+        #time.sleep(7)
         try:
             nData = browser.execute_script("return nData")
             print nData
@@ -185,8 +208,9 @@ def grabing(item):
             print fakeurl
 
             url =  fakeurl[0][0]
+            #browser.add_cookie(b)
             browser.get(url)
-            time.sleep(7)
+            #time.sleep(7)
             nData = browser.execute_script("return nData")
             print nData
             print filmtitle
