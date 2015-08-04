@@ -179,7 +179,7 @@ def filterchannels(category):
 def channels_list():
     itemlist = []
 
-    itemlist.append( Item( viewmode="movie", title="Play URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
+    #itemlist.append( Item( viewmode="movie", title="Play URL"         , channel="tengourl"   , language="" , category="F,S,D,A" , type="generic"  ))
     itemlist.append( Item( title="Itastreaming (IT)"      , channel="itastreaming"           , language="IT"    , category="F,S,A"   , type="generic"     ))
     itemlist.append( Item( title="Griffin Ita"          , channel="griffin"         , language="IT" , category="F,S,D,A"        , type="generic" ))
     itemlist.append( Item( title="CB01"          , channel="cb01"         , language="IT" , category="F,S,D,A"        , type="generic" ))
