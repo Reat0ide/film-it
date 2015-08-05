@@ -33,7 +33,7 @@ def mainlist(item):
     
     #http://altadefinizione.co/genere/avventura/
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="movies", title="ultimi film inseriti..." , url="http://altadefinizione.co" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="ultimi film inseriti..." , url="http://altadefinizione.co/news" ))
     itemlist.append( Item(channel=__channel__ , action="search", title="Cerca Film"))
     itemlist.append( Item(channel=__channel__ , action="movies", title="animazione" , url="http://altadefinizione.co/genere/animazione" ))
     itemlist.append( Item(channel=__channel__ , action="movies", title="avventura" , url="http://altadefinizione.co/genere/avventura" ))
@@ -130,6 +130,16 @@ def movies(item):
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
 
+    #next page <link rel="next" href="http://altadefinizione.co/genere/azione/page/2/" />
+
+    patternpage = '<link rel="next" href="(.*?)"'
+    matches = re.compile(patternpage,re.DOTALL).findall(data)
+    print matches
+
+
+    if len(matches)>0:
+        scrapedurl = urlparse.urljoin(item.url,matches[0])
+        itemlist.append( Item(channel=__channel__, action="movies", title="Next Page >>" , url=scrapedurl , folder=True) )
 
     return itemlist
 
@@ -144,7 +154,7 @@ def grabing(item):
     browser.get(item.url)
     time.sleep(5)
     browser.find_element_by_link_text("HD").click()
-    time.sleep(3)
+    #time.sleep(3)
     data =  browser.page_source.encode('utf-8')
     #print data
 
