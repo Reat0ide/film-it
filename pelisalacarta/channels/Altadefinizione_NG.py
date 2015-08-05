@@ -152,12 +152,13 @@ def grabing(item):
     if item.title:
         filmtitle = str(item.title)
         filmtitle =  filmtitle.replace('–','')
+        thumbnail = scrapthumb(filmtitle)
         try:
             nData = browser.execute_script("return theSources")
             print nData
             for block in nData:
                 print block['file']
-                itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + " quality: " + block['label'] , url=block['file'] ))
+                itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + " quality: " + block['label'] , url=block['file'], thumbnail=thumbnail ))
             browser.close()
 
         except:
