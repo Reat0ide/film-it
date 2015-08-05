@@ -59,7 +59,7 @@ def mainlist(item):
 
     return itemlist
 
-'''
+
 def search(item, text):
 
     itemlist = []
@@ -75,15 +75,16 @@ def search(item, text):
         time.sleep(5)
         data =  browser.page_source.encode('utf-8')
 
-        pattern = '<div class="col-lg-3 col-md-3 col-xs-3">\s*'
-        pattern += '<a href="(.*?)".*?alt="(.*?)"'
+        pattern = '<div class="item">\s*'
+        pattern += '<a href="(.*?)">\s*'
+        pattern += '<div class="image">\s*'
+        pattern += '<img src="(.*?)".*?alt="(.*?)"'
         matches = re.compile(pattern,re.DOTALL).findall(data)
         print matches
-
-        for scrapedurl, scrapedtitle in matches:
+        for scrapedurl, scrapedthumbnail, scrapedtitle in matches:
             url = urlparse.urljoin(item.url, scrapedurl)
             title = scrapedtitle.strip()
-            #thumbnail = urlparse.urljoin(item.url, scrapedthumbnail)
+
             thumbnail = scrapthumb(title)
             itemlist.append(Item(channel=__channel__, action="grabing", title=title, url=url, thumbnail=thumbnail, folder=True))
 
@@ -94,11 +95,6 @@ def search(item, text):
         for line in sys.exc_info():
             logger.error("%s" % line)
         return []
-
-'''
-
-
-
 
 
 
@@ -114,7 +110,7 @@ def movies(item):
     data =  browser.page_source.encode('utf-8')
 
 
-    #pattern = '<div class="items">\s*'
+
     pattern = '<div class="item">\s*'
     pattern += '<a href="(.*?)">\s*'
     pattern += '<div class="image">\s*'
