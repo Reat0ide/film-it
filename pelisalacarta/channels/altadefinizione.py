@@ -64,6 +64,48 @@ def mainlist(item):
 
     return itemlist
 
+def search(item, text):
+
+    itemlist = []
+    text = text.replace(" ", "%20")
+    item.url = "http://altadefinizione.click/?s=" + text
+
+    try:
+
+        dcap = dict(DesiredCapabilities.PHANTOMJS)
+        dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+        browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        browser.get(item.url)
+        time.sleep(5)
+        data =  browser.page_source.encode('utf-8')
+
+        pattern = '<div class="col-lg-3 col-md-3 col-xs-3">\s*'
+        pattern += '<a href="(.*?)".*?alt="(.*?)"'
+        matches = re.compile(pattern,re.DOTALL).findall(data)
+        print matches
+
+        for scrapedurl, scrapedtitle in matches:
+            url = urlparse.urljoin(item.url, scrapedurl)
+            title = scrapedtitle.strip()
+            #thumbnail = urlparse.urljoin(item.url, scrapedthumbnail)
+            thumbnail = scrapthumb(title)
+            itemlist.append(Item(channel=__channel__, action="grabing", title=title, url=url, thumbnail=thumbnail, folder=True))
+
+        return itemlist
+
+    except:
+        import sys
+        for line in sys.exc_info():
+            logger.error("%s" % line)
+        return []
+
+
+
+
+
+
+
+
 def movies(item):
 
     itemlist = []

@@ -19,10 +19,10 @@ from core.item import Item
 #from servers import servertools
 import json
 
-__channel__ = "itastreaming_test"
+__channel__ = "itastreaming"
 __category__ = "F"
 __type__ = "generic"
-__title__ = "itastreaming_test"
+__title__ = "itastreaming"
 __language__ = "IT"
 
 DEBUG = config.get_setting("debug")
@@ -33,7 +33,7 @@ def isGeneric():
     return True
 
 def mainlist(item):
-    logger.info("pelisalacarta.itastreaming_test  mainlist")
+    logger.info("pelisalacarta.itastreaming  mainlist")
 
     itemlist = []
     itemlist.append( Item(channel=__channel__ , action="peliculas", title="ultimi film inseriti..." , url="http://itastreaming.tv" ))
