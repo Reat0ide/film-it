@@ -143,44 +143,26 @@ def grabing(item):
     browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
     browser.get(item.url)
     time.sleep(5)
-    visible_url = browser.execute_script("switchVisible();")
-    print visible_url
+    browser.find_element_by_link_text("HD").click()
+    time.sleep(3)
     data =  browser.page_source.encode('utf-8')
-
+    #print data
 
     #esegue questa funziona solo se si clicca sul titolo del film
     if item.title:
         filmtitle = str(item.title)
         filmtitle =  filmtitle.replace('–','')
-        url = item.url + '#'
-        dcap = dict(DesiredCapabilities.PHANTOMJS)
-        dcap["phantomjs.page.settings.userAgent"] = (
-             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-        browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-        browser.get(url)
-        time.sleep(7)
         try:
-            nData = browser.execute_script("return nData")
+            nData = browser.execute_script("return theSources")
             print nData
             for block in nData:
-                itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + "  quality: " + block['width'] +  " x " + block['height'] , url=block['url'] ))
+                print block['file']
+                itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + " quality: " + block['label'] , url=block['file'] ))
             browser.close()
 
         except:
 
-            fakeurl = re.findall('"((http)s?://.*?hdpass.link.*?)"', data)
-            print fakeurl
-
-            url =  fakeurl[0][0]
-            browser.get(url)
-            time.sleep(7)
-            nData = browser.execute_script("return nData")
-            print nData
-            print filmtitle
-            for block in nData:
-                print block['url']
-                itemlist.append( Item(channel=__channel__, action="playit", title=filmtitle + "  quality: " + block['width'] +  " x " + block['height'] , url=block['url'] ))
-            browser.close()
+            print "file not found"
 
     return itemlist
 
