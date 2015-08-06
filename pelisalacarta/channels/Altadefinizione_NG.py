@@ -7,17 +7,16 @@
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-#import cfscrape
 import time
-#from pyvirtualdisplay import Display
 import urlparse,urllib2,urllib,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
 import os, sys
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
-#from servers import servertools
-import json
+import cookielib
+import requests
+import os.path
 
 __channel__ = "altadefinizione_NG"
 __category__ = "F"
@@ -25,13 +24,47 @@ __type__ = "generic"
 __title__ = "altadefinizione_NG"
 __language__ = "IT"
 
+COOKIEFILE = "/Users/arturo/alta_NGcookie.lwp"
+h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
+baseUrl = "http://altadefinizione.co"
+
+def createCookies():
+
+    if not os.path.isfile(COOKIEFILE):
+
+        print "File not exists"
+        #get cookies!
+        dcap = dict(DesiredCapabilities.PHANTOMJS)
+        dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+        browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        browser.get(baseUrl)
+        time.sleep(10)
+        a = browser.get_cookies()
+        print 'Got cloudflare cookies:\n'
+        browser.close()
+        b = cookielib.MozillaCookieJar()
+
+        for i in a:
+            # create the cf_session_cookie
+            ck = cookielib.Cookie(name=i['name'], value=i['value'], domain=i['domain'], path=i['path'], secure=i['secure'], rest=False, version=0,port=None,port_specified=False,domain_specified=False,domain_initial_dot=False,path_specified=True,expires=i['expiry'],discard=True,comment=None,comment_url=None,rfc2109=False)
+            b.set_cookie(ck)
+        # save into a file
+        print b
+        b.save(filename=COOKIEFILE, ignore_discard=True, ignore_expires=False)
+
+    else:
+        print "found it, do nothing!"
+        b = True
+
+    return b
+
+
 def isGeneric():
     return True
 
 
 def mainlist(item):
-    
-    #http://altadefinizione.co/genere/avventura/
+
     itemlist = []
     itemlist.append( Item(channel=__channel__ , action="movies", title="ultimi film inseriti..." , url="http://altadefinizione.co/news" ))
     itemlist.append( Item(channel=__channel__ , action="search", title="Cerca Film"))
@@ -39,7 +72,6 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__ , action="movies", title="avventura" , url="http://altadefinizione.co/genere/avventura" ))
     itemlist.append( Item(channel=__channel__ , action="movies", title="azione" , url="http://altadefinizione.co/genere/azione" ))
     itemlist.append( Item(channel=__channel__ , action="movies", title="biografico" , url="http://altadefinizione.co/genere/biografico" ))
-    itemlist.append( Item(channel=__channel__ , action="movies", title="commedia" , url="http://altadefinizione.co/genere/commedia" ))
     itemlist.append( Item(channel=__channel__ , action="movies", title="commedia" , url="http://altadefinizione.co/genere/commedia" ))
     itemlist.append( Item(channel=__channel__ , action="movies", title="corto" , url="http://altadefinizione.co/genere/corto" ))
     itemlist.append( Item(channel=__channel__ , action="movies", title="documentario" , url="http://altadefinizione.co/genere/documentario" ))
@@ -68,12 +100,17 @@ def search(item, text):
 
     try:
 
-        dcap = dict(DesiredCapabilities.PHANTOMJS)
-        dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-        browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-        browser.get(item.url)
-        time.sleep(5)
-        data =  browser.page_source.encode('utf-8')
+        #dcap = dict(DesiredCapabilities.PHANTOMJS)
+        #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+        #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        #browser.get(item.url)
+        #time.sleep(5)
+        #data =  browser.page_source.encode('utf-8')
+
+        biscotto = cookielib.MozillaCookieJar()
+        biscotto.load(COOKIEFILE)
+        data = requests.get(item.url, cookies=biscotto, headers=h)
+        data = data.text.encode('utf-8')
 
         pattern = '<div class="item">\s*'
         pattern += '<a href="(.*?)">\s*'
@@ -102,21 +139,29 @@ def movies(item):
 
     itemlist = []
 
-    dcap = dict(DesiredCapabilities.PHANTOMJS)
-    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    browser.get(item.url)
-    time.sleep(5)
-    data =  browser.page_source.encode('utf-8')
+    #dcap = dict(DesiredCapabilities.PHANTOMJS)
+    #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+    #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+    #browser.get(item.url)
+    #time.sleep(5)
+    #data =  browser.page_source.encode('utf-8')
 
-
+    createCookies()
+    itemlist = []
+    biscotto = cookielib.MozillaCookieJar()
+    biscotto.load(COOKIEFILE)
+    data = requests.get(item.url, cookies=biscotto, headers=h)
+    data = data.text.encode('utf-8')
+    data = data.replace('&#8211;','-').replace('&#8217;',' ')
 
     pattern = '<div class="item">\s*'
     pattern += '<a href="(.*?)">\s*'
     pattern += '<div class="image">\s*'
     pattern += '<img src="(.*?)".*?alt="(.*?)"'
     matches = re.compile(pattern,re.DOTALL).findall(data)
-    print matches
+    if not matches:
+        print "Coockies expired!, delete it"
+        os.remove(COOKIEFILE)
     for scrapedurl,scrapedthumbnail, scrapedtitle in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
@@ -126,7 +171,7 @@ def movies(item):
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
 
-    #next page <link rel="next" href="http://altadefinizione.co/genere/azione/page/2/" />
+
 
     patternpage = '<link rel="next" href="(.*?)"'
     matches = re.compile(patternpage,re.DOTALL).findall(data)

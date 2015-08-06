@@ -116,12 +116,6 @@ def movies(item):
     browser.get(item.url)
     time.sleep(5)
     data =  browser.page_source.encode('utf-8')
-    #print data
-
-    #pattern = '<div class="col-lg-3 col-md-3 col-xs-3">\s*'
-    #pattern += '<div class="wrapperImage">\s*<span class="hd">HD</span>\s*'
-    #pattern += '<a href="?([^>"]+)"?.*?<img.*?src="([^>"]+).*?class="attachment-loc-film wp-post-image" alt="([^>"]+)'
-    ####### TEST new Pattern
 
     pattern = '<h2 class="titleFilm"><a href="(.*?)">(.*?)</a>'
 
