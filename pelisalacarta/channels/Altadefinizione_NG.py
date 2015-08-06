@@ -137,7 +137,6 @@ def search(item, text):
 
 def movies(item):
 
-    itemlist = []
 
     #dcap = dict(DesiredCapabilities.PHANTOMJS)
     #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
@@ -153,15 +152,18 @@ def movies(item):
     data = requests.get(item.url, cookies=biscotto, headers=h)
     data = data.text.encode('utf-8')
     data = data.replace('&#8211;','-').replace('&#8217;',' ')
-
-    pattern = '<div class="item">\s*'
+    print data
+    pattern = '<div class="item cap-left">\s*'
     pattern += '<a href="(.*?)">\s*'
     pattern += '<div class="image">\s*'
     pattern += '<img src="(.*?)".*?alt="(.*?)"'
     matches = re.compile(pattern,re.DOTALL).findall(data)
+
+    print matches
     if not matches:
         print "Coockies expired!, delete it"
         os.remove(COOKIEFILE)
+
     for scrapedurl,scrapedthumbnail, scrapedtitle in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
