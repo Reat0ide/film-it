@@ -20,7 +20,7 @@ from core.item import Item
 import json
 import cookielib
 import requests
-
+import os.path
 
 
 __channel__ = "itastreaming_test"
@@ -29,14 +29,13 @@ __type__ = "generic"
 __title__ = "itastreaming_test"
 __language__ = "IT"
 
+COOKIEFILE = "/Users/arturo/itacookie.lwp"
+h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
 
+#Do if cookie doesn't exist
+if not os.path.isfile(COOKIEFILE):
+    print "File not exists"
 
-
-############    first selenium call    ###########################
-
-b = None
-if b is None:
-    COOKIEFILE = 'itacookie.lwp'
     baseUrl = "http://itastreaming.co"
     dcap = dict(DesiredCapabilities.PHANTOMJS)
     dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
@@ -49,22 +48,19 @@ if b is None:
     print 'Got cloudflare cookies:\n'
     browser.close()
 
-    h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
-    b = cookielib.LWPCookieJar()
+    #h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
+    b = cookielib.MozillaCookieJar()
 
     for i in a:
         # create the cf_session_cookie
         ck = cookielib.Cookie(name=i['name'], value=i['value'], domain=i['domain'], path=i['path'], secure=i['secure'], rest=False, version=0,port=None,port_specified=False,domain_specified=False,domain_initial_dot=False,path_specified=True,expires=i['expiry'],discard=True,comment=None,comment_url=None,rfc2109=False)
         b.set_cookie(ck)
+
     # save into a file
-    #itacookie = cookielib.LWPCookieJar()
     print b
-    b.save(COOKIEFILE)
-
-
-###############################################
-
-
+    b.save(filename=COOKIEFILE, ignore_discard=True, ignore_expires=True)
+else:
+    print "esiste, passa avanti"
 
 
 
@@ -115,14 +111,10 @@ def search(item, text):
 
     try:
 
-        #dcap = dict(DesiredCapabilities.PHANTOMJS)
-        #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-        #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-        #browser.get(item.url)
-        #time.sleep(5)
-        #data =  browser.page_source.encode('utf-8')
-        data = requests.get(item.url, cookies=b, headers=h)
-        print data
+        biscotto = cookielib.MozillaCookieJar()
+        biscotto.load(COOKIEFILE)
+        data = requests.get(item.url, cookies=biscotto, headers=h)
+        data = data.text.encode('utf-8')
 
         pattern = '<img class="imx" style="margin-top:0px;" src="?([^>"]+)"?.*?alt="?([^>"]+)"?.*?'
         pattern += '<h3><a href="?([^>"]+)"?.*?</h3>'
@@ -148,8 +140,9 @@ def search(item, text):
 def peliculas(item):
 
     itemlist = []
-
-    data = requests.get(item.url, cookies=b, headers=h)
+    biscotto = cookielib.MozillaCookieJar()
+    biscotto.load(COOKIEFILE)
+    data = requests.get(item.url, cookies=biscotto, headers=h)
     data = data.text.encode('utf-8')
 
     patron  = '<div class="item">\s*'
@@ -179,7 +172,9 @@ def peliculas(item):
 def grabing(item):
 
     itemlist = []
-    data = requests.get(item.url, cookies=b, headers=h)
+    biscotto = cookielib.MozillaCookieJar()
+    biscotto.load(COOKIEFILE)
+    data = requests.get(item.url, cookies=biscotto, headers=h)
     data = data.text.encode('utf-8')
 
 
@@ -192,7 +187,7 @@ def grabing(item):
         dcap["phantomjs.page.settings.userAgent"] = (
              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
         browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-        #browser.add_cookie(b)
+
         browser.get(item.url)
         #time.sleep(7)
         try:
@@ -208,7 +203,7 @@ def grabing(item):
             print fakeurl
 
             url =  fakeurl[0][0]
-            #browser.add_cookie(b)
+
             browser.get(url)
             #time.sleep(7)
             nData = browser.execute_script("return nData")
