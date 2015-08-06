@@ -7,17 +7,16 @@
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-#import cfscrape
 import time
-#from pyvirtualdisplay import Display
 import urlparse,urllib2,urllib,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
 import os, sys
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
-#from servers import servertools
-import json
+import cookielib
+import requests
+import os.path
 
 __channel__ = "itastreaming"
 __category__ = "F"
@@ -25,9 +24,42 @@ __type__ = "generic"
 __title__ = "itastreaming"
 __language__ = "IT"
 
-DEBUG = config.get_setting("debug")
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0"
+COOKIEFILE = "/Users/arturo/itacookie.lwp"
+h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
 
+
+#### FIRST Setup ####
+# Do if cookie doesn't exist
+if not os.path.isfile(COOKIEFILE):
+    print "File not exists"
+
+    baseUrl = "http://itastreaming.co"
+    dcap = dict(DesiredCapabilities.PHANTOMJS)
+    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+    browser.get(baseUrl)
+    time.sleep(10)
+
+    #get cookie
+    a = browser.get_cookies()
+    print 'Got cloudflare cookies:\n'
+    browser.close()
+
+    #h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
+    b = cookielib.MozillaCookieJar()
+
+    for i in a:
+        # create the cf_session_cookie
+        ck = cookielib.Cookie(name=i['name'], value=i['value'], domain=i['domain'], path=i['path'], secure=i['secure'], rest=False, version=0,port=None,port_specified=False,domain_specified=False,domain_initial_dot=False,path_specified=True,expires=i['expiry'],discard=True,comment=None,comment_url=None,rfc2109=False)
+        b.set_cookie(ck)
+
+    # save into a file
+    print b
+    b.save(filename=COOKIEFILE, ignore_discard=True, ignore_expires=True)
+else:
+    print "esiste, passa avanti"
+
+#####################
 
 def isGeneric():
     return True
@@ -36,33 +68,33 @@ def mainlist(item):
     logger.info("pelisalacarta.itastreaming  mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="ultimi film inseriti..." , url="http://itastreaming.tv" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="ultimi film inseriti..." , url="http://itastreaming.co" ))
     itemlist.append( Item(channel=__channel__ , action="search", title="Cerca Film"))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="animazione" , url="http://itastreaming.tv/genere/animazione" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="avventura" , url="http://itastreaming.tv/genere/avventura" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="azione" , url="http://itastreaming.tv/genere/azione" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="biografico" , url="http://itastreaming.tv/genere/biografico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="comico" , url="http://itastreaming.tv/genere/comico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="commedia" , url="http://itastreaming.tv/genere/commedia" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="documentario" , url="http://itastreaming.tv/genere/documentario" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="drammatico" , url="http://itastreaming.tv/genere/drammatico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="erotico" , url="http://itastreaming.tv/genere/erotico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="fantascienza" , url="http://itastreaming.tv/genere/fantascienza" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="fantasy" , url="http://itastreaming.tv/genere/fantasy" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="gangstar" , url="http://itastreaming.tv/genere/gangstar" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="giallo" , url="http://itastreaming.tv/genere/giallo" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="guerra" , url="http://itastreaming.tv/genere/guerra" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="horror" , url="http://itastreaming.tv/genere/horror" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="musical" , url="http://itastreaming.tv/genere/musical" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="romantico" , url="http://itastreaming.tv/genere/romantico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="storico" , url="http://itastreaming.tv/genere/storico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="thriller" , url="http://itastreaming.tv/genere/thriller" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="western" , url="http://itastreaming.tv/genere/western" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD" , url="http://itastreaming.tv/qualita/hd" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="DVD-RIP" , url="http://itastreaming.tv/qualita/dvdripac3" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="CAM" , url="http://itastreaming.tv/qualita/cam" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD-MD" , url="http://itastreaming.tv/qualita/hd-md" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD-TS" , url="http://itastreaming.tv/qualita/hd-ts" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="animazione" , url="http://itastreaming.co/genere/animazione" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="avventura" , url="http://itastreaming.co/genere/avventura" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="azione" , url="http://itastreaming.co/genere/azione" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="biografico" , url="http://itastreaming.co/genere/biografico" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="comico" , url="http://itastreaming.co/genere/comico" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="commedia" , url="http://itastreaming.co/genere/commedia" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="documentario" , url="http://itastreaming.co/genere/documentario" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="drammatico" , url="http://itastreaming.co/genere/drammatico" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="erotico" , url="http://itastreaming.co/genere/erotico" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="fantascienza" , url="http://itastreaming.co/genere/fantascienza" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="fantasy" , url="http://itastreaming.co/genere/fantasy" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="gangstar" , url="http://itastreaming.co/genere/gangstar" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="giallo" , url="http://itastreaming.co/genere/giallo" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="guerra" , url="http://itastreaming.co/genere/guerra" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="horror" , url="http://itastreaming.co/genere/horror" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="musical" , url="http://itastreaming.co/genere/musical" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="romantico" , url="http://itastreaming.co/genere/romantico" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="storico" , url="http://itastreaming.co/genere/storico" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="thriller" , url="http://itastreaming.co/genere/thriller" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="western" , url="http://itastreaming.co/genere/western" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD" , url="http://itastreaming.co/qualita/hd" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="DVD-RIP" , url="http://itastreaming.co/qualita/dvdripac3" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="CAM" , url="http://itastreaming.co/qualita/cam" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD-MD" , url="http://itastreaming.co/qualita/hd-md" ))
+    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD-TS" , url="http://itastreaming.co/qualita/hd-ts" ))
 
     return itemlist
 
@@ -71,17 +103,22 @@ def search(item, text):
 
     itemlist = []
     text = text.replace(" ", "%20")
-    item.url = "http://itastreaming.tv/?s=" + text
+    item.url = "http://itastreaming.co/?s=" + text
 
     try:
 
-        dcap = dict(DesiredCapabilities.PHANTOMJS)
-        dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-        browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-        browser.get(item.url)
-        time.sleep(5)
-        data =  browser.page_source.encode('utf-8')
+        #dcap = dict(DesiredCapabilities.PHANTOMJS)
+        #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+        #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        #browser.get(item.url)
+        #time.sleep(5)
+        #data =  browser.page_source.encode('utf-8')
 
+        biscotto = cookielib.MozillaCookieJar()
+        biscotto.load(COOKIEFILE)
+        data = requests.get(item.url, cookies=biscotto, headers=h)
+        data = data.text.encode('utf-8')
+        data = data.replace('&#8211;','-').replace('&#8217;',' ')
         pattern = '<img class="imx" style="margin-top:0px;" src="?([^>"]+)"?.*?alt="?([^>"]+)"?.*?'
         pattern += '<h3><a href="?([^>"]+)"?.*?</h3>'
         matches = re.compile(pattern,re.DOTALL).findall(data)
@@ -107,13 +144,18 @@ def peliculas(item):
 
     itemlist = []
 
-    dcap = dict(DesiredCapabilities.PHANTOMJS)
-    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    browser.get(item.url)
-    time.sleep(5)
-    data =  browser.page_source.encode('utf-8')
+    #dcap = dict(DesiredCapabilities.PHANTOMJS)
+    #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+    #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+    #browser.get(item.url)
+    #time.sleep(5)
+    #data =  browser.page_source.encode('utf-8')
 
+    biscotto = cookielib.MozillaCookieJar()
+    biscotto.load(COOKIEFILE)
+    data = requests.get(item.url, cookies=biscotto, headers=h)
+    data = data.text.encode('utf-8')
+    data = data.replace('&#8211;','-').replace('&#8217;',' ')
     patron  = '<div class="item">\s*'
     patron += '<a href="?([^>"]+)"?.*?title="?([^>"]+)"?.*?'
     patron += '<div class="img">\s*'
@@ -124,10 +166,8 @@ def peliculas(item):
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapthumb(title)
-        #print thumbnail
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
-        #scrapthumb(title) #ok
 
     #next page
     patternpage = '<a rel="nofollow" class="previouspostslink\'" href="(.*?)">Seguente \›</a>'
@@ -153,13 +193,16 @@ def peliculas(item):
 def grabing(item):
 
     itemlist = []
-    dcap = dict(DesiredCapabilities.PHANTOMJS)
-    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    browser.get(item.url)
-    time.sleep(5)
-    data =  browser.page_source.encode('utf-8')
-
+    #dcap = dict(DesiredCapabilities.PHANTOMJS)
+    #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+    #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+    #browser.get(item.url)
+    #time.sleep(5)
+    #data =  browser.page_source.encode('utf-8')
+    biscotto = cookielib.MozillaCookieJar()
+    biscotto.load(COOKIEFILE)
+    data = requests.get(item.url, cookies=biscotto, headers=h)
+    data = data.text.encode('utf-8')
 
     #esegue questa funziona solo se si clicca sul titolo del film
     if item.title:
@@ -172,6 +215,7 @@ def grabing(item):
         browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
         browser.get(item.url)
         time.sleep(7)
+
         try:
             nData = browser.execute_script("return nData")
             print nData
@@ -183,7 +227,6 @@ def grabing(item):
 
             fakeurl = re.findall('"((http)s?://.*?hdpass.link.*?)"', data)
             print fakeurl
-
             url =  fakeurl[0][0]
             browser.get(url)
             time.sleep(7)
@@ -197,6 +240,8 @@ def grabing(item):
 
     return itemlist
 
+
+
 def playit(item):
 
     itemlist = []
@@ -205,6 +250,8 @@ def playit(item):
     if not xbmc.Player().isPlayingVideo():
         xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(item.url)
     return itemlist
+
+
 
 def scrapthumb(title):
 
