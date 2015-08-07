@@ -26,40 +26,37 @@ __language__ = "IT"
 
 COOKIEFILE = "/Users/arturo/itacookie.lwp"
 h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
+baseUrl = "http://itastreaming.co"
 
+def createCookies():
 
-#### FIRST Setup ####
-# Do if cookie doesn't exist
-if not os.path.isfile(COOKIEFILE):
-    print "File not exists"
+    if not os.path.isfile(COOKIEFILE):
 
-    baseUrl = "http://itastreaming.co"
-    dcap = dict(DesiredCapabilities.PHANTOMJS)
-    dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    browser.get(baseUrl)
-    time.sleep(10)
+        print "File not exists"
+        #get cookies!
+        dcap = dict(DesiredCapabilities.PHANTOMJS)
+        dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
+        browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
+        browser.get(baseUrl)
+        time.sleep(10)
+        a = browser.get_cookies()
+        print 'Got cloudflare cookies:\n'
+        browser.close()
+        b = cookielib.MozillaCookieJar()
 
-    #get cookie
-    a = browser.get_cookies()
-    print 'Got cloudflare cookies:\n'
-    browser.close()
+        for i in a:
+            # create the cf_session_cookie
+            ck = cookielib.Cookie(name=i['name'], value=i['value'], domain=i['domain'], path=i['path'], secure=i['secure'], rest=False, version=0,port=None,port_specified=False,domain_specified=False,domain_initial_dot=False,path_specified=True,expires=i['expiry'],discard=True,comment=None,comment_url=None,rfc2109=False)
+            b.set_cookie(ck)
+        # save into a file
+        print b
+        b.save(filename=COOKIEFILE, ignore_discard=True, ignore_expires=False)
 
-    #h = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0'}
-    b = cookielib.MozillaCookieJar()
+    else:
+        print "found it, do nothing!"
+        b = True
 
-    for i in a:
-        # create the cf_session_cookie
-        ck = cookielib.Cookie(name=i['name'], value=i['value'], domain=i['domain'], path=i['path'], secure=i['secure'], rest=False, version=0,port=None,port_specified=False,domain_specified=False,domain_initial_dot=False,path_specified=True,expires=i['expiry'],discard=True,comment=None,comment_url=None,rfc2109=False)
-        b.set_cookie(ck)
-
-    # save into a file
-    print b
-    b.save(filename=COOKIEFILE, ignore_discard=True, ignore_expires=True)
-else:
-    print "esiste, passa avanti"
-
-#####################
+    return b
 
 def isGeneric():
     return True
@@ -142,6 +139,7 @@ def search(item, text):
 #azione "peliculas" server per estrerre i titoli
 def peliculas(item):
 
+    createCookies()
     itemlist = []
 
     #dcap = dict(DesiredCapabilities.PHANTOMJS)
@@ -161,7 +159,9 @@ def peliculas(item):
     patron += '<div class="img">\s*'
     patron += '<img.*?src="([^>"]+)'
     matches = re.compile(patron,re.DOTALL).findall(data)
-
+    if not matches:
+        print "Coockies expired!, delete it"
+        os.remove(COOKIEFILE)
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)

@@ -151,7 +151,7 @@ def movies(item):
     biscotto.load(COOKIEFILE)
     data = requests.get(item.url, cookies=biscotto, headers=h)
     data = data.text.encode('utf-8')
-    data = data.replace('&#8211;','-').replace('&#8217;',' ')
+    data = data.replace('&#8211;','-').replace('&#8217;',' ').replace('&#8230;','...')
     print data
     pattern = '<div class="item cap-left">\s*'
     pattern += '<a href="(.*?)">\s*'
