@@ -149,7 +149,7 @@ def movies(item):
     data = requests.get(item.url, cookies=biscotto, headers=h)
     data = data.text.encode('utf-8')
     data = data.replace('&#8211;','-').replace('&#8217;',' ').replace('&#8230;','...')
-    print data
+
     pattern = '<div class="item cap-left">\s*'
     pattern += '<a href="(.*?)">\s*'
     pattern += '<div class="image">\s*'
@@ -161,7 +161,9 @@ def movies(item):
         print "Coockies expired!, delete it"
         os.remove(COOKIEFILE)
 
+    print len(matches)
     for scrapedurl,scrapedthumbnail, scrapedtitle in matches:
+
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapthumb(title)

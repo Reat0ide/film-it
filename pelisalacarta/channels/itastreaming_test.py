@@ -34,13 +34,17 @@ def createCookies():
     if not os.path.isfile(COOKIEFILE):
 
         print "File not exists"
-        #get cookies!
+
+        progress = xbmcgui.DialogProgress()
+        progress.create('Progress', 'Create a CF_Cookie')
+
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
         browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
         browser.get(baseUrl)
         time.sleep(10)
         a = browser.get_cookies()
+
         print 'Got cloudflare cookies:\n'
         browser.close()
         b = cookielib.MozillaCookieJar()
@@ -153,10 +157,29 @@ def movies(item):
         print "Coockies expired!, delete it"
         os.remove(COOKIEFILE)
 
+    #progress = xbmcgui.DialogProgress()
+    #progress.create('Progress', 'This is a progress bar.')
+    #i = 0
+    #while i < len(matches):
+    #    percent = int( ( i / 10.0 ) * 100)
+    #    message = "Message " + str(i) + " out of 10"
+    #    progress.update( percent, "", message, "" )
+    #    print "Message " + str(i) + " out of 10"
+    #    xbmc.sleep( 1000 )
+    #    if progress.iscanceled():
+    #        break
+    #    i = i + 1
+
+    #progress.close()
+
+
+
+
+
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
-        #thumbnail = scrapthumb(title)
+        thumbnail = scrapthumb(title)
         thumbnail = ""
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
