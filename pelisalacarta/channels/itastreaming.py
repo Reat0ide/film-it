@@ -65,33 +65,33 @@ def mainlist(item):
     logger.info("pelisalacarta.itastreaming  mainlist")
 
     itemlist = []
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="ultimi film inseriti..." , url="http://itastreaming.co" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="ultimi film inseriti..." , url="http://itastreaming.co" ))
     itemlist.append( Item(channel=__channel__ , action="search", title="Cerca Film"))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="animazione" , url="http://itastreaming.co/genere/animazione" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="avventura" , url="http://itastreaming.co/genere/avventura" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="azione" , url="http://itastreaming.co/genere/azione" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="biografico" , url="http://itastreaming.co/genere/biografico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="comico" , url="http://itastreaming.co/genere/comico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="commedia" , url="http://itastreaming.co/genere/commedia" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="documentario" , url="http://itastreaming.co/genere/documentario" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="drammatico" , url="http://itastreaming.co/genere/drammatico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="erotico" , url="http://itastreaming.co/genere/erotico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="fantascienza" , url="http://itastreaming.co/genere/fantascienza" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="fantasy" , url="http://itastreaming.co/genere/fantasy" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="gangstar" , url="http://itastreaming.co/genere/gangstar" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="giallo" , url="http://itastreaming.co/genere/giallo" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="guerra" , url="http://itastreaming.co/genere/guerra" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="horror" , url="http://itastreaming.co/genere/horror" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="musical" , url="http://itastreaming.co/genere/musical" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="romantico" , url="http://itastreaming.co/genere/romantico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="storico" , url="http://itastreaming.co/genere/storico" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="thriller" , url="http://itastreaming.co/genere/thriller" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="western" , url="http://itastreaming.co/genere/western" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD" , url="http://itastreaming.co/qualita/hd" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="DVD-RIP" , url="http://itastreaming.co/qualita/dvdripac3" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="CAM" , url="http://itastreaming.co/qualita/cam" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD-MD" , url="http://itastreaming.co/qualita/hd-md" ))
-    itemlist.append( Item(channel=__channel__ , action="peliculas", title="HD-TS" , url="http://itastreaming.co/qualita/hd-ts" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="animazione" , url="http://itastreaming.co/genere/animazione" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="avventura" , url="http://itastreaming.co/genere/avventura" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="azione" , url="http://itastreaming.co/genere/azione" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="biografico" , url="http://itastreaming.co/genere/biografico" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="comico" , url="http://itastreaming.co/genere/comico" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="commedia" , url="http://itastreaming.co/genere/commedia" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="documentario" , url="http://itastreaming.co/genere/documentario" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="drammatico" , url="http://itastreaming.co/genere/drammatico" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="erotico" , url="http://itastreaming.co/genere/erotico" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="fantascienza" , url="http://itastreaming.co/genere/fantascienza" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="fantasy" , url="http://itastreaming.co/genere/fantasy" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="gangstar" , url="http://itastreaming.co/genere/gangstar" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="giallo" , url="http://itastreaming.co/genere/giallo" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="guerra" , url="http://itastreaming.co/genere/guerra" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="horror" , url="http://itastreaming.co/genere/horror" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="musical" , url="http://itastreaming.co/genere/musical" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="romantico" , url="http://itastreaming.co/genere/romantico" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="storico" , url="http://itastreaming.co/genere/storico" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="thriller" , url="http://itastreaming.co/genere/thriller" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="western" , url="http://itastreaming.co/genere/western" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="HD" , url="http://itastreaming.co/qualita/hd" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="DVD-RIP" , url="http://itastreaming.co/qualita/dvdripac3" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="CAM" , url="http://itastreaming.co/qualita/cam" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="HD-MD" , url="http://itastreaming.co/qualita/hd-md" ))
+    itemlist.append( Item(channel=__channel__ , action="movies", title="HD-TS" , url="http://itastreaming.co/qualita/hd-ts" ))
 
     return itemlist
 
@@ -136,8 +136,8 @@ def search(item, text):
         return []
 
 
-#azione "peliculas" server per estrerre i titoli
-def peliculas(item):
+#azione "movies" server per estrerre i titoli
+def movies(item):
 
     createCookies()
     itemlist = []
@@ -184,7 +184,7 @@ def peliculas(item):
 
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="Next Page >>" , url=scrapedurl , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="movies", title="Next Page >>" , url=scrapedurl , folder=True) )
 
 
     return itemlist
