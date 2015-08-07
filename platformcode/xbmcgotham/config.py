@@ -21,7 +21,7 @@ import os
 import xbmcaddon
 import xbmc
 
-PLUGIN_NAME = "pelisalacarta"
+PLUGIN_NAME = "filmIT"
 __settings__ = xbmcaddon.Addon(id="plugin.video."+PLUGIN_NAME)
 __language__ = __settings__.getLocalizedString
 

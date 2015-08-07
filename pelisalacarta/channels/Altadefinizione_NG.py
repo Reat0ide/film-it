@@ -237,8 +237,8 @@ def scrapthumb(title):
     title = title.replace(' ','-')
     print title
 
-    mdburl = 'https://www.themoviedb.org/search?query=' + title
-    imdb = 'http://www.imdb.com/find?q=' + title                #il+fidanzato+di+mia++++sorella
+    #mdburl = 'https://www.themoviedb.org/search?query=' + title
+    mdburl = 'https://www.themoviedb.org/search/movie?query=' + title
     req = urllib2.Request(mdburl)
     response = urllib2.urlopen(req)
     data = response.read()

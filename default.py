@@ -6,8 +6,8 @@
 #------------------------------------------------------------
 
 # Constants
-__plugin__  = "pelisalacarta"
-__author__  = "pelisalacarta"
+__plugin__  = "filmIT"
+__author__  = "Reat0ide"
 __url__     = "http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/"
 __date__ = "19/03/2015"
 __version__ = "3.9.99"
@@ -17,7 +17,7 @@ import sys
 from core import config
 from core import logger
 
-logger.info("[default.py] pelisalacarta init...")
+#logger.info("[default.py] pelisalacarta init...")
 
 librerias = xbmc.translatePath( os.path.join( config.get_runtime_path(), 'lib' ) )
 sys.path.append (librerias)

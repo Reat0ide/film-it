@@ -256,7 +256,7 @@ def scrapthumb(title):
     title = title.replace(' ','-')
     title = title[:-7]
     #print title
-    mdburl = 'https://www.themoviedb.org/search?query=' + title
+    mdburl = 'https://www.themoviedb.org/search/movie?query=' + title
     req = urllib2.Request(mdburl)
     response = urllib2.urlopen(req)
     data = response.read()
