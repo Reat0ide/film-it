@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
-# pelisalacarta - XBMC Plugin
-# Canal para itastreaming
-# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
-#------------------------------------------------------------
 
 import urllib2,urllib,re,xbmcplugin,xbmcgui,xbmcaddon,xbmc
 

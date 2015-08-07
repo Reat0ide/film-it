@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
-# pelisalacarta - XBMC Plugin
-# Canal para ver un vídeo conociendo su URL
-# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re
 import os

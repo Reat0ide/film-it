@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------
-# pelisalacarta - XBMC Plugin
-# Canal para itastreaming
-# http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #------------------------------------------------------------
 import selenium
 from selenium import webdriver
