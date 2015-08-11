@@ -16,6 +16,8 @@ import json
 import cookielib
 import requests
 import os.path
+import timeit
+
 
 
 __channel__ = "itastreaming_test"
@@ -157,33 +159,26 @@ def movies(item):
         print "Coockies expired!, delete it"
         os.remove(COOKIEFILE)
 
-    #progress = xbmcgui.DialogProgress()
-    #progress.create('Progress', 'This is a progress bar.')
-    #i = 0
-    #while i < len(matches):
-    #    percent = int( ( i / 10.0 ) * 100)
-    #    message = "Message " + str(i) + " out of 10"
-    #    progress.update( percent, "", message, "" )
-    #    print "Message " + str(i) + " out of 10"
-    #    xbmc.sleep( 1000 )
-    #    if progress.iscanceled():
-    #        break
-    #    i = i + 1
 
-    #progress.close()
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'Scraping Titles.')
 
-
-
-
-
+    i=0
     for scrapedurl,scrapedtitle,scrapedthumbnail in matches:
+
+
         title = scrapedtitle.strip()
+        message = "Scraping movies - " + str(i) + " : " + title
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapthumb(title)
         thumbnail = ""
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
-        #scrapthumb(title) #ok
+
+        progress.update( int(i) , "", message, "" ) #BAR
+        xbmc.sleep( 1000 ) #BAR
+        i = i + 1
+    progress.close()
 
     return itemlist
 

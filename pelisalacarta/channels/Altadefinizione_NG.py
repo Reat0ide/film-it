@@ -90,26 +90,19 @@ def mainlist(item):
 
 
 def search(item, text):
-
+    createCookies()
     itemlist = []
     text = text.replace(" ", "%20")
     item.url = "http://altadefinizione.co/?s=" + text
 
     try:
 
-        #dcap = dict(DesiredCapabilities.PHANTOMJS)
-        #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-        #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-        #browser.get(item.url)
-        #time.sleep(5)
-        #data =  browser.page_source.encode('utf-8')
-
         biscotto = cookielib.MozillaCookieJar()
         biscotto.load(COOKIEFILE)
         data = requests.get(item.url, cookies=biscotto, headers=h)
         data = data.text.encode('utf-8')
 
-        pattern = '<div class="item">\s*'
+        pattern = '<div class="item cap-left">\s*'
         pattern += '<a href="(.*?)">\s*'
         pattern += '<div class="image">\s*'
         pattern += '<img src="(.*?)".*?alt="(.*?)"'
@@ -134,14 +127,6 @@ def search(item, text):
 
 def movies(item):
 
-
-    #dcap = dict(DesiredCapabilities.PHANTOMJS)
-    #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    #browser.get(item.url)
-    #time.sleep(5)
-    #data =  browser.page_source.encode('utf-8')
-
     createCookies()
     itemlist = []
     biscotto = cookielib.MozillaCookieJar()
@@ -161,18 +146,22 @@ def movies(item):
         print "Coockies expired!, delete it"
         os.remove(COOKIEFILE)
 
-    print len(matches)
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'Scraping Titles.')
+    i = 0
     for scrapedurl,scrapedthumbnail, scrapedtitle in matches:
-
+        title = scrapedtitle.strip()
+        message = "Scraping movies - " + str(i) + " : " + title
         title = scrapedtitle.strip()
         url = urlparse.urljoin(item.url,scrapedurl)
         thumbnail = scrapthumb(title)
-        #thumbnail = ""
-        #print thumbnail
+
         scrapedplot = ""
         itemlist.append( Item(channel=__channel__, action="grabing", title=title , url=url , thumbnail=thumbnail , plot=scrapedplot , folder=True) )
-
-
+        progress.update( int(i) , "", message, "" ) #BAR
+        xbmc.sleep( 1000 ) #BAR
+        i = i + 1
+    progress.close()
 
     patternpage = '<link rel="next" href="(.*?)"'
     matches = re.compile(patternpage,re.DOTALL).findall(data)

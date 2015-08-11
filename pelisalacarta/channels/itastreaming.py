@@ -95,18 +95,12 @@ def mainlist(item):
 #searching for films
 def search(item, text):
 
+    createCookies()
     itemlist = []
     text = text.replace(" ", "%20")
     item.url = "http://itastreaming.co/?s=" + text
 
     try:
-
-        #dcap = dict(DesiredCapabilities.PHANTOMJS)
-        #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-        #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-        #browser.get(item.url)
-        #time.sleep(5)
-        #data =  browser.page_source.encode('utf-8')
 
         biscotto = cookielib.MozillaCookieJar()
         biscotto.load(COOKIEFILE)
@@ -138,13 +132,6 @@ def movies(item):
 
     createCookies()
     itemlist = []
-
-    #dcap = dict(DesiredCapabilities.PHANTOMJS)
-    #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    #browser.get(item.url)
-    #time.sleep(5)
-    #data =  browser.page_source.encode('utf-8')
 
     biscotto = cookielib.MozillaCookieJar()
     biscotto.load(COOKIEFILE)
@@ -190,12 +177,6 @@ def movies(item):
 def grabing(item):
 
     itemlist = []
-    #dcap = dict(DesiredCapabilities.PHANTOMJS)
-    #dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:37.0) Gecko/20100101 Firefox/37.0")
-    #browser = webdriver.PhantomJS(executable_path='/bin/phantomjs',desired_capabilities = dcap, service_log_path=os.path.devnull)
-    #browser.get(item.url)
-    #time.sleep(5)
-    #data =  browser.page_source.encode('utf-8')
     biscotto = cookielib.MozillaCookieJar()
     biscotto.load(COOKIEFILE)
     data = requests.get(item.url, cookies=biscotto, headers=h)
