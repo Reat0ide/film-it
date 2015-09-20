@@ -101,7 +101,11 @@ def search(item, text):
         biscotto.load(COOKIEFILE)
         data = requests.get(item.url, cookies=biscotto, headers=h)
         data = data.text.encode('utf-8')
+<<<<<<< Updated upstream
 
+=======
+        print data
+>>>>>>> Stashed changes
         pattern = '<div class="item cap-left">\s*'
         pattern += '<a href="(.*?)">\s*'
         pattern += '<div class="image">\s*'
